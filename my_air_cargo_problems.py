@@ -187,11 +187,83 @@ def air_cargo_p1() -> AirCargoProblem:
     return AirCargoProblem(cargos, planes, airports, init, goal)
 
 
-def air_cargo_p2() -> AirCargoProblem:
-    # TODO implement Problem 2 definition
-    pass
+def expr_gen(a):
+    def inner(x, y):
+        return expr(f"{a}({x}, {y})")
+    return inner
 
 
-def air_cargo_p3() -> AirCargoProblem:
-    # TODO implement Problem 3 definition
-    pass
+def expr_bulk(expr):
+    def inner(args_list):
+        return [expr(x, y) for x, y in args_list]
+    return inner
+
+
+def air_cargo_p2():
+    expr_in = expr_gen("In")
+    expr_at = expr_gen("At")
+    expr_bulk_in = expr_bulk(expr_in)
+    expr_bulk_at = expr_bulk(expr_at)
+
+    c1, c2, c3 = 'C1', 'C2', 'C3'
+    cargos = {c1, c2, c3}
+    p1, p2, p3 = 'P1', 'P2', 'P3'
+    planes = {p1, p2, p3}
+    jfk, sfo, atl = 'JFK', 'SFO', 'ATL'
+    airports = {jfk, sfo, atl}
+
+    pos = [expr_at(c1, sfo),
+           expr_at(c2, jfk),
+           expr_at(c3, atl),
+           expr_at(p1, sfo),
+           expr_at(p2, jfk),
+           expr_at(p3, atl),
+           ]
+    neg = (expr_bulk_in([[c, p] for c in cargos for p in planes]) +
+           expr_bulk_at([[c1, a] for a in airports - {sfo}]) +
+           expr_bulk_at([[c2, a] for a in airports - {jfk}]) +
+           expr_bulk_at([[c3, a] for a in airports - {atl}]) +
+           expr_bulk_at([[p1, a] for a in airports - {sfo}]) +
+           expr_bulk_at([[p2, a] for a in airports - {jfk}]) +
+           expr_bulk_at([[p3, a] for a in airports - {atl}]))
+    init = FluentState(pos, neg)
+    goal = [expr_at(c1, jfk),
+            expr_at(c2, sfo),
+            expr_at(c3, sfo),
+            ]
+    return AirCargoProblem(cargos, planes, airports, init, goal)
+
+
+def air_cargo_p3():
+    expr_in = expr_gen("In")
+    expr_at = expr_gen("At")
+    expr_bulk_in = expr_bulk(expr_in)
+    expr_bulk_at = expr_bulk(expr_at)
+
+    c1, c2, c3, c4 = 'C1', 'C2', 'C3', 'C4'
+    cargos = [c1, c2, c3, c4]
+    p1, p2 = 'P1', 'P2'
+    planes = [p1, p2]
+    jfk, sfo, atl, chi = 'JFK', 'SFO', 'ATL', 'ORD'
+    airports = {jfk, sfo, atl, chi}
+    pos = [expr_at(c1, sfo),
+           expr_at(c2, jfk),
+           expr_at(c3, atl),
+           expr_at(c4, chi),
+           expr_at(p1, sfo),
+           expr_at(p2, jfk),
+           ]
+    neg = (expr_bulk_in([[c, p] for c in cargos for p in planes]) +
+           expr_bulk_at([[c1, a] for a in airports - {sfo}]) +
+           expr_bulk_at([[c2, a] for a in airports - {jfk}]) +
+           expr_bulk_at([[c3, a] for a in airports - {atl}]) +
+           expr_bulk_at([[c4, a] for a in airports - {chi}]) +
+           expr_bulk_at([[p1, a] for a in airports - {sfo}]) +
+           expr_bulk_at([[p2, a] for a in airports - {jfk}]))
+    init = FluentState(pos, neg)
+    goal = [expr_at(c1, jfk),
+            expr_at(c2, sfo),
+            expr_at(c3, jfk),
+            expr_at(c4, sfo),
+            ]
+    return AirCargoProblem(cargos, planes, airports, init, goal)
