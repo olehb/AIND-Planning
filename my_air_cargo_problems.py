@@ -60,7 +60,21 @@ class AirCargoProblem(Problem):
             :return: list of Action objects
             """
             loads = []
-            # TODO create all load ground actions from the domain Load action
+            expr_load = expr_gen("Load")
+            for a in self.airports:
+                for p in self.planes:
+                    for c in self.cargos:
+                        precond_pos = [expr_at(p, a),
+                                       expr_at(c, a),
+                                       ]
+                        precond_neg = []
+                        effect_add = [expr_in(c, p)]
+                        effect_rem = [expr_at(c, a)]
+                        load = Action(expr_load(c, p, a),
+                                      [precond_pos, precond_neg],
+                                      [effect_add, effect_rem])
+                        loads.append(load)
+
             return loads
 
         def unload_actions():
@@ -69,7 +83,19 @@ class AirCargoProblem(Problem):
             :return: list of Action objects
             """
             unloads = []
-            # TODO create all Unload ground actions from the domain Unload action
+            expr_unload = expr_gen("Unload")
+            for a in self.airports:
+                for p in self.planes:
+                    for c in self.cargos:
+                        precond_pos = [expr_at(p, a),
+                                       expr_in(c, p)]
+                        precond_neg = []
+                        effect_add = [expr_in(c, a)]
+                        effect_rem = [expr_in(c, p)]
+                        unload = Action(expr_unload(c, p, a),
+                                        [precond_pos, precond_neg],
+                                        [effect_add, effect_rem])
+                        unloads.append(unload)
             return unloads
 
         def fly_actions():
@@ -78,16 +104,16 @@ class AirCargoProblem(Problem):
             :return: list of Action objects
             """
             flys = []
+            expr_fly = expr_gen("Fly")
             for fr in self.airports:
                 for to in self.airports:
                     if fr != to:
                         for p in self.planes:
-                            precond_pos = [expr("At({}, {})".format(p, fr)),
-                                           ]
+                            precond_pos = [expr_at(p, fr)]
                             precond_neg = []
-                            effect_add = [expr("At({}, {})".format(p, to))]
-                            effect_rem = [expr("At({}, {})".format(p, fr))]
-                            fly = Action(expr("Fly({}, {}, {})".format(p, fr, to)),
+                            effect_add = [expr_at(p, to)]
+                            effect_rem = [expr_at(p, fr)]
+                            fly = Action(expr_fly(p, fr, to),
                                          [precond_pos, precond_neg],
                                          [effect_add, effect_rem])
                             flys.append(fly)
@@ -188,8 +214,10 @@ def air_cargo_p1() -> AirCargoProblem:
 
 
 def expr_gen(a):
-    def inner(x, y):
-        return expr(f"{a}({x}, {y})")
+    def inner(*args):
+        args_list_literal = ', '.join(['{}']*len(args))
+        expr_template = f"{a}({args_list_literal})"
+        return expr(expr_template.format(*args))
     return inner
 
 
@@ -199,12 +227,14 @@ def expr_bulk(expr):
     return inner
 
 
-def air_cargo_p2():
-    expr_in = expr_gen("In")
-    expr_at = expr_gen("At")
-    expr_bulk_in = expr_bulk(expr_in)
-    expr_bulk_at = expr_bulk(expr_at)
+expr_in = expr_gen("In")
+expr_at = expr_gen("At")
+expr_load = expr_gen("Load")
+expr_bulk_in = expr_bulk(expr_in)
+expr_bulk_at = expr_bulk(expr_at)
 
+
+def air_cargo_p2():
     c1, c2, c3 = 'C1', 'C2', 'C3'
     cargos = {c1, c2, c3}
     p1, p2, p3 = 'P1', 'P2', 'P3'
@@ -235,11 +265,6 @@ def air_cargo_p2():
 
 
 def air_cargo_p3():
-    expr_in = expr_gen("In")
-    expr_at = expr_gen("At")
-    expr_bulk_in = expr_bulk(expr_in)
-    expr_bulk_at = expr_bulk(expr_at)
-
     c1, c2, c3, c4 = 'C1', 'C2', 'C3', 'C4'
     cargos = [c1, c2, c3, c4]
     p1, p2 = 'P1', 'P2'
@@ -267,3 +292,7 @@ def air_cargo_p3():
             expr_at(c4, sfo),
             ]
     return AirCargoProblem(cargos, planes, airports, init, goal)
+
+
+# if __name__ == '__main__':
+#     print(air_cargo_p2())
