@@ -144,8 +144,14 @@ class AirCargoProblem(Problem):
         :param action: Action applied
         :return: resulting state after action
         """
-        # TODO implement
         new_state = FluentState([], [])
+        old_state = decode_state(state, self.state_map)
+        new_state.pos.extend([f for f in old_state.pos if f not in action.effect_rem])
+        new_state.pos.extend([f for f in action.effect_add if f not in new_state.pos])
+
+        new_state.neg.extend([f for f in old_state.neg if f not in action.effect_add])
+        new_state.neg.extend([f for f in action.effect_rem if f not in new_state.neg])
+
         return encode_state(new_state, self.state_map)
 
     def goal_test(self, state: str) -> bool:
