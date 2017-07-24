@@ -129,9 +129,11 @@ class AirCargoProblem(Problem):
             e.g. 'FTTTFF'
         :return: list of Action objects
         """
-        # TODO implement
-        possible_actions = []
-        return possible_actions
+        kb = PropKB()
+        kb.tell(decode_state(state, self.state_map).pos_sentence())
+        return [action for action in self.actions_list
+                if (all([c not in kb.clauses for c in action.precond_pos])
+                    and all([c in kb.clauses for c in action.precond_neg]))]
 
     def result(self, state: str, action: Action):
         """ Return the state that results from executing the given
