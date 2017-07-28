@@ -221,6 +221,22 @@ def air_cargo_p1() -> AirCargoProblem:
 
 
 def expr_gen(a):
+    """
+    Closure which generates function, which creates expression
+    :param a: str
+        action name, e.g. "Fly"
+    :return:
+        function that returns concrete instance of expression for given parameters.
+        Works for arbitrary number of parameters.
+
+        Example 1:
+        expr_in = expr_gen("In")
+        concrete_expr = expr_in("C1", "P1")
+
+        Example 2:
+        expr_fly = expr_gen("Fly")
+        concrete_expr = expr_fly("P1", "SFO", "JFK")
+    """
     def inner(*args):
         args_list_literal = ', '.join(['{}']*len(args))
         expr_template = f"{a}({args_list_literal})"
@@ -229,6 +245,7 @@ def expr_gen(a):
 
 
 def expr_bulk(expr):
+    # TODO: Make it work for expressions with arbitrary number of args
     def inner(args_list):
         return [expr(x, y) for x, y in args_list]
     return inner
@@ -299,7 +316,3 @@ def air_cargo_p3():
             expr_at(c4, sfo),
             ]
     return AirCargoProblem(cargos, planes, airports, init, goal)
-
-
-# if __name__ == '__main__':
-#     print(air_cargo_p2())
