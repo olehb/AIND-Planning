@@ -64,8 +64,8 @@ class AirCargoProblem(Problem):
             for a in self.airports:
                 for p in self.planes:
                     for c in self.cargos:
-                        precond_pos = [expr_at(p, a),
-                                       expr_at(c, a)]
+                        precond_pos = [expr_at(c, a),
+                                       expr_at(p, a)]
                         precond_neg = []
                         effect_add = [expr_in(c, p)]
                         effect_rem = [expr_at(c, a)]
@@ -89,7 +89,7 @@ class AirCargoProblem(Problem):
                         precond_pos = [expr_at(p, a),
                                        expr_in(c, p)]
                         precond_neg = []
-                        effect_add = [expr_in(c, a)]
+                        effect_add = [expr_at(c, a)]
                         effect_rem = [expr_in(c, p)]
                         unload = Action(expr_unload(c, p, a),
                                         [precond_pos, precond_neg],
