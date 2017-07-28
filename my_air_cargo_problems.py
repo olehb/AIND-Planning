@@ -65,8 +65,7 @@ class AirCargoProblem(Problem):
                 for p in self.planes:
                     for c in self.cargos:
                         precond_pos = [expr_at(p, a),
-                                       expr_at(c, a),
-                                       ]
+                                       expr_at(c, a)]
                         precond_neg = []
                         effect_add = [expr_in(c, p)]
                         effect_rem = [expr_at(c, a)]
@@ -132,8 +131,8 @@ class AirCargoProblem(Problem):
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
         return [action for action in self.actions_list
-                if (all([c not in kb.clauses for c in action.precond_pos])
-                    and all([c in kb.clauses for c in action.precond_neg]))]
+                if (all([c not in kb.clauses for c in action.precond_neg])
+                    and all([c in kb.clauses for c in action.precond_pos]))]
 
     def result(self, state: str, action: Action):
         """ Return the state that results from executing the given
@@ -191,9 +190,9 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         """
-        # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
-        count = 0
-        return count
+        kb = PropKB()
+        kb.tell(decode_state(node.state, self.state_map).pos_sentence())
+        return sum([1 for clause in self.goal if clause not in kb.clauses])
 
 
 def air_cargo_p1() -> AirCargoProblem:
