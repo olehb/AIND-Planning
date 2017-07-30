@@ -161,10 +161,7 @@ class AirCargoProblem(Problem):
         """
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
-        for clause in self.goal:
-            if clause not in kb.clauses:
-                return False
-        return True
+        return all([clause in kb.clauses for clause in self.goal])
 
     def h_1(self, node: Node):
         # note that this is not a true heuristic
@@ -253,7 +250,6 @@ def expr_bulk(expr):
 
 expr_in = expr_gen("In")
 expr_at = expr_gen("At")
-expr_load = expr_gen("Load")
 expr_bulk_in = expr_bulk(expr_in)
 expr_bulk_at = expr_bulk(expr_at)
 

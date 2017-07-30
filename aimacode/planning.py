@@ -43,15 +43,10 @@ class Action:
 
     def check_precond(self, kb, args):
         """Checks if the precondition is satisfied in the current state"""
-        # check for positive clauses
-        for clause in self.precond_pos:
-            if self.substitute(clause, args) not in kb.clauses:
-                return False
-        # check for negative clauses
-        for clause in self.precond_neg:
-            if self.substitute(clause, args) in kb.clauses:
-                return False
-        return True
+        return (all([self.substitute(clause, args) in kb.clauses
+                     for clause in self.precond_pos]) and
+                all([self.substitute(clause, args) not in kb.clauses
+                     for clause in self.precond_neg]))
 
     def act(self, kb, args):
         """Executes the action on the state's kb"""

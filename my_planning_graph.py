@@ -26,9 +26,7 @@ class PgNode():
         :return: bool
             True if this node and the other are marked mutually exclusive (mutex)
         """
-        if other in self.mutex:
-            return True
-        return False
+        return other in self.mutex
 
     def show(self):
         """helper print for debugging shows counts of parents, children, siblings
@@ -315,8 +313,8 @@ class PlanningGraph():
         self.a_levels.append(set())
         for action in self.all_actions:
             a_node = PgNode_a(action)
-            if a_node.prenodes.issubset(self.s_levels[level]):
-                for s_node in self.s_levels[level]:
+            if a_node.prenodes <= self.s_levels[level]:
+                for s_node in a_node.prenodes:
                     a_node.parents.add(s_node)
                     s_node.children.add(a_node)
                 self.a_levels[level].add(a_node)
