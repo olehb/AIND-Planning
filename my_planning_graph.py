@@ -494,11 +494,12 @@ class PlanningGraph():
         """The sum of the level costs of the individual goals (admissible if goals independent)
         :return: int
         """
-        s_nodes = [PgNode_s(g, True) for g in self.problem.goal]
+        goal_nodes = {PgNode_s(g, True) for g in self.problem.goal}
         level_sum = 0
-        for s_node in s_nodes:
-            for level, level_s_nodes in enumerate(self.s_levels):
-                if s_node in level_s_nodes:
-                    level_sum += level
-                    break  # can't use list comprehension because of this 'break'
+        for level, level_s_nodes in enumerate(self.s_levels):
+            goal_nodes_at_level = goal_nodes & level_s_nodes
+            level_sum += len(goal_nodes_at_level)*level
+            goal_nodes -= goal_nodes_at_level
+            if len(goal_nodes) == 0:
+                break
         return level_sum
