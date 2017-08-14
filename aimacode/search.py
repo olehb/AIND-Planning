@@ -233,7 +233,7 @@ def uniform_cost_search(problem):
     return best_first_graph_search(problem, lambda node: node.path_cost)
 
 
-def depth_limited_search(problem, limit=50):
+def depth_limited_search(problem, limit=12):
     "[Figure 3.17]"
     def recursive_dls(node, problem, limit):
         if problem.goal_test(node.state):
@@ -263,6 +263,7 @@ def iterative_deepening_search(problem):
 
 # ______________________________________________________________________________
 # Informed (Heuristic) Search
+
 
 greedy_best_first_graph_search = best_first_graph_search
 # Greedy best-first search is accomplished by specifying f(n) = h(n).

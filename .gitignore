@@ -4,5 +4,6 @@ __pycache__
 *.zip
 *.json
 .idea/
+heuristic_analysis.docx
 tests/.cache/v/cache/lastfailed
 .cache/v/cache/lastfailed
