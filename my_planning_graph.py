@@ -433,8 +433,8 @@ class PlanningGraph():
         :return: bool
         """
         return any([precond_a1.is_mutex(precond_a2)
-                    for precond_a1 in node_a1.prenodes
-                    for precond_a2 in node_a2.prenodes])
+                    for precond_a1 in node_a1.parents
+                    for precond_a2 in node_a2.parents])
 
     def update_s_mutex(self, nodeset: set):
         """ Determine and update sibling mutual exclusion for S-level nodes
